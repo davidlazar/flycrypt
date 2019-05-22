@@ -31,10 +31,10 @@ func main() {
 			key()
 			return
 		case 'e':
-			encrypt()
+			encrypt(reader)
 			return
 		case 'd':
-			decrypt()
+			decrypt(reader)
 			return
 		}
 	}
@@ -52,9 +52,7 @@ func key() {
 	fmt.Printf("Private key: %s (SAVE THIS)\n", privStr)
 }
 
-func encrypt() {
-	reader := bufio.NewReader(os.Stdin)
-
+func encrypt(reader *bufio.Reader) {
 	fmt.Printf("Public key: ")
 	line, _ := reader.ReadString('\n')
 	if len(line) == 0 {
@@ -69,7 +67,7 @@ func encrypt() {
 	copy(theirPublic[:], data)
 
 	fmt.Printf(">> Message (^D to finish):\n")
-	message, err := ioutil.ReadAll(os.Stdin)
+	message, err := ioutil.ReadAll(reader)
 	if err != nil {
 		log.Fatalf("error reading input: %s", err)
 	}
@@ -92,9 +90,7 @@ func encrypt() {
 	fmt.Printf("\n-- Ciphertext --\n%s\n", outStr)
 }
 
-func decrypt() {
-	reader := bufio.NewReader(os.Stdin)
-
+func decrypt(reader *bufio.Reader) {
 	fmt.Printf("Private key: ")
 	line, _ := reader.ReadString('\n')
 	if len(line) == 0 {
@@ -109,7 +105,7 @@ func decrypt() {
 	copy(myPrivate[:], data)
 
 	fmt.Printf(">> Ciphertext (^D to finish):\n")
-	ctxtData, err := ioutil.ReadAll(os.Stdin)
+	ctxtData, err := ioutil.ReadAll(reader)
 	if err != nil {
 		log.Fatalf("error reading input: %s", err)
 	}
