@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/davidlazar/go-crypto/encoding/base32"
+	"github.com/tchajed/wordenc"
 	"golang.org/x/crypto/nacl/box"
 )
 
@@ -46,9 +47,12 @@ func key() {
 		log.Fatalf("box.GenerateKey error: %s", err)
 	}
 	pubStr := base32.EncodeToString(public[:])
+	pubWordEncoded := wordenc.EncodeToString(public[:])
 	privStr := base32.EncodeToString(private[:])
 	fmt.Println()
 	fmt.Printf(" Public key: %s\n", pubStr)
+	fmt.Println(pubWordEncoded)
+	fmt.Println()
 	fmt.Printf("Private key: %s (SAVE THIS)\n", privStr)
 }
 
@@ -59,9 +63,12 @@ func encrypt(reader *bufio.Reader) {
 		log.Fatalf("unable to read key")
 	}
 
-	data, err := base32.DecodeString(strings.TrimSpace(line))
+	data, err := wordenc.DecodeString(line)
 	if err != nil || len(data) != 32 {
-		log.Fatalf("failed to decode key")
+		data, err = base32.DecodeString(strings.TrimSpace(line))
+		if err != nil || len(data) != 32 {
+			log.Fatalf("failed to decode key")
+		}
 	}
 	theirPublic := new([32]byte)
 	copy(theirPublic[:], data)
